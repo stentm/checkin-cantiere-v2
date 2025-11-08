@@ -1,7 +1,7 @@
-import fetch from "node-fetch";
-
 export const config = {
-  runtime: "nodejs",   // forza runtime compatibile
+  api: {
+    bodyParser: true,
+  },
 };
 
 export default async function handler(req, res) {
