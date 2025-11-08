@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Check-in Cantiere</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; text-align: center; background: #f8f9fa; }
+    form { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.1); max-width: 400px; margin: auto; }
+    input, select, button { width: 90%; padding: 10px; margin-top: 10px; font-size: 16px; border-radius: 8px; border: 1px solid #ccc; }
+    button { background-color: #007bff; color: white; border: none; cursor: pointer; }
+    button:hover { background-color: #0056b3; }
+    h2 { color: #333; }
+    #success { color: green; font-weight: bold; margin-top: 15px; }
+  </style>
+</head>
+<body>
+  <h2>Registrazione Presenza Cantiere</h2>
+  <form id="checkinForm">
+    <input type="text" id="nome" placeholder="Nome e Cognome" required />
+    <input type="text" id="azienda" placeholder="Azienda" required />
+    <select id="azione" required>
+      <option value="">-- Seleziona Azione --</option>
+      <option value="Entrata">Entrata</option>
+      <option value="Uscita">Uscita</option>
+    </select>
+    <button type="submit">Registra Presenza</button>
+  </form>
+  <p id="success"></p>
+
+  <script>
+    document.getElementById("checkinForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const cantiere = urlParams.get("cantiere") || "Sconosciuto";
+
+      const now = new Date();
+      const data = now.toLocaleDateString("it-IT");
+      const ora = now.toLocaleTimeString("it-IT");
+
+      const record = {
+        data: data,
+        ora: ora,
+        nome: document.getElementById("nome").value,
+        azienda: document.getElementById("azienda").value,
+        cantiere: cantiere,
+        azione: document.getElementById("azione").value
+      };
+
+      try {
+        const res = await fetch("/api/save", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(record)
+        });
+
+        if (res.ok) {
+          document.getElementById("success").innerText = "✅ Presenza registrata correttamente!";
+          document.getElementById("checkinForm").reset();
+        } else {
+          alert("Errore durante l'invio dei dati.");
+        }
+      } catch (err) {
+        alert("Errore di connessione: " + err);
+      }
+    });
+  </script>
+</body>
+</html>
