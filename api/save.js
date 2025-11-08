@@ -1,4 +1,8 @@
-import fetch from 'node-fetch';
+import fetch from "node-fetch";
+
+export const config = {
+  runtime: "nodejs",   // forza runtime compatibile
+};
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -11,11 +15,13 @@ export default async function handler(req, res) {
     const result = await fetch(SHEETDB_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ data: [req.body] })
+      body: JSON.stringify({ data: [req.body] }),
     });
 
+    const data = await result.json();
+
     if (!result.ok) {
-      return res.status(500).json({ error: "SheetDB error" });
+      return res.status(500).json({ error: "SheetDB error", data });
     }
 
     return res.status(200).json({ success: true });
